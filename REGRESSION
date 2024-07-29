@@ -1,0 +1,42 @@
+package simpleregression;
+
+public class Simpleregression {
+
+    private static final double[] CN_A = {0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9};
+    private static final double[] CN_B = {0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.85, 0.9, 0.92};
+    private static final double[] CN_C = {0.025, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45};
+
+    
+    public static double calculateRunoff(double precipitation, double runoffCoefficient) {
+        double cn = lookupCNValue(runoffCoefficient);
+        double runoff = (precipitation - (0.2 * Math.pow(cn - 10, 2.0) / (cn + 0.8)));
+        return Math.max(runoff, 0); 
+    }
+
+    private static double lookupCNValue(double runoffCoefficient) {
+        for (int i = 0; i < CN_B.length; i++) {
+            if (runoffCoefficient <= CN_B[i]) {
+                return CN_A[i] * Math.exp(CN_C[i] * runoffCoefficient);
+            }
+        }
+        return 100; 
+    }
+
+    public static double estimateSoilMoisture(double precipitation, double evapotranspiration, double initialSoilMoisture) {
+        
+        return initialSoilMoisture + precipitation - evapotranspiration;
+    }
+
+    public static void main(String[] args) {
+        double precipitation = 50; 
+        double runoffCoefficient = 0.3; 
+        double evapotranspiration = 20; 
+        double initialSoilMoisture = 100; 
+
+        double runoff = calculateRunoff(precipitation, runoffCoefficient);
+        double finalSoilMoisture = estimateSoilMoisture(precipitation, evapotranspiration, initialSoilMoisture);
+
+        System.out.println("Estimated Runoff: " + runoff + " mm");
+        System.out.println("Final Soil Moisture: " + finalSoilMoisture + " mm");
+    }
+}
